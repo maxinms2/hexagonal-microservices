@@ -1,8 +1,19 @@
-# 🚀 Proyecto de Microservicios con Spring Boot
+# 🚀 Proyecto de Microservicios con Spring Boot + Event-Driven con Kafka
 
 ## 📚 Proyecto Educativo: De Cero a Héroe en Microservicios
 
 Bienvenido a este proyecto educativo diseñado para aprender microservicios desde cero, aplicando las mejores prácticas de la industria.
+
+> ⚡ **NUEVO**: ¡Ahora con Event-Driven Architecture y Kafka! Comunicación asíncrona entre servicios.
+
+### 🎯 ¿POR DÓNDE EMPEZAR?
+
+**👉 [LEE COMIENZA-AQUI.md PRIMERO](./COMIENZA-AQUI.md)** 
+
+Allí encontrarás:
+- 🚀 **Ruta rápida**: 5 minutos para verlo funcionando
+- 🧠 **Ruta de aprendizaje**: Entiende los conceptos
+- 💻 **Ruta técnica**: Códifica y modifica
 
 ## 🎯 ¿Qué vamos a construir?
 
@@ -13,7 +24,7 @@ Un sistema de e-commerce simplificado con:
 - **API Gateway**: Punto de entrada único
 - **Service Discovery**: Para que los servicios se encuentren entre sí
 - **Config Server**: Configuración centralizada
-- **Kafka**: 🆕 Comunicación asíncrona entre servicios
+- **Kafka**: 🆕 Comunicación asíncrona entre servicios event-driven
 
 ## 🏗️ Arquitectura
 
@@ -23,21 +34,44 @@ Un sistema de e-commerce simplificado con:
 └──────┬──────┘
        │
        ▼
-┌─────────────┐
-│ API Gateway │ ← Punto de entrada único
-└──────┬──────┘
+┌─────────────────────────┐
+│   API Gateway           │ ← Punto de entrada único
+└──────┬──────────────────┘
        │
-       ├─────────┬──────────┐
-       ▼         ▼          ▼
-  ┌────────┐ ┌────────┐ ┌────────┐
-  │  User  │ │ Order  │ │ Product│
-  │Service │ │Service │ │Service │
-  └────────┘ └────────┘ └────────┘
+       ├─────────┬──────────┬──────────────┐
+       ▼         ▼          ▼              ▼
+  ┌────────┐ ┌────────┐ ┌─────────┐  ┌──────────────┐
+  │  User  │ │ Order  │ │Product  │  │Notification │
+  │Service │ │Service │ │Service  │  │Service   🆕  │
+  └────────┘ └────┬───┘ └─────────┘  └──────▲───────┘
+                  │                          │
+                  └──────────┬────────────────┘
+                             ▼
+                      ┌─────────────────┐
+                      │  Apache Kafka   │ 🆕
+                      │  (Asíncrono)    │
+                      │  Event-Driven   │
+                      └─────────────────┘
+```
+
+### Event-Driven Flow (🆕)
+
+```
+1. Usuario crea orden
+   └─> Order Service procesa
+        └─> Publica evento a Kafka
+            └─> Notification Service consume
+                └─> Envía notificación
 ```
 
 ## 📖 Documentación
 
 Toda la documentación está en la carpeta [docs](docs/):
+
+### Para empezar rápido:
+- **[COMIENZA-AQUI.md](./COMIENZA-AQUI.md)** ← 👈 Empieza aquí
+- **[QUICKSTART-KAFKA.md](./QUICKSTART-KAFKA.md)** - 5 pasos para verlo funcionando
+- **[RESUMEN-VISUAL.md](./RESUMEN-VISUAL.md)** - Resumen visual del proyecto
 
 1. **[¿Qué son los Microservicios?](docs/01-que-son-microservicios.md)** - Conceptos básicos
 2. **[Arquitectura Hexagonal](docs/02-arquitectura-hexagonal.md)** - Patrón de diseño
