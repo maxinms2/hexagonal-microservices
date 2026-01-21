@@ -1,0 +1,124 @@
+# ============================================
+# CONFIGURACIÓN DEL USER SERVICE
+# ============================================
+
+# Información de la aplicación
+spring:
+  application:
+    name: user-service
+    
+  # Perfil activo (dev, test, prod)
+  profiles:
+    active: dev
+
+# Puerto del servidor
+server:
+  port: 8081
+  
+# Configuración de logging
+logging:
+  level:
+    root: INFO
+    com.microservices: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+---
+# ============================================
+# PERFIL: DESARROLLO
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  # Deshabilita Config Server en desarrollo para evitar el error de import
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+      
+  # Base de datos H2 (en memoria para desarrollo)
+  datasource:
+    url: jdbc:h2:mem:userdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+    
+  # Consola H2 habilitada
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      
+  # JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # Recrea las tablas cada vez
+    show-sql: true           # Muestra las queries SQL
+    properties:
+      hibernate:
+        format_sql: true     # Formatea el SQL
+        use_sql_comments: true
+
+# Eureka Client (deshabilitado en desarrollo)
+eureka:
+  client:
+    enabled: false
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+---
+# ============================================
+# PERFIL: PRODUCCIÓN
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+      
+  # Base de datos PostgreSQL
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/userdb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:secret}
+    driver-class-name: org.postgresql.Driver
+    
+  # JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate     # Solo valida, no crea tablas
+    show-sql: false          # No mostrar SQL en producción
+    properties:
+      hibernate:
+        format_sql: false
+
+# Eureka Client (habilitado en producción)
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+
+# Actuator (limitado en producción)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
