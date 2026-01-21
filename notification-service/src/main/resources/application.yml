@@ -1,0 +1,74 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: notification-service
+  
+  # ====== KAFKA CONFIGURATION ======
+  # Configuración de Kafka para conectarse al broker
+  kafka:
+    # Dirección del broker de Kafka
+    # En Docker, usaremos: kafka:9092
+    # En local: localhost:9092
+    bootstrap-servers: localhost:9092
+    
+    # CONFIGURACIÓN DE CONSUMER (Consumidor)
+    # El notification-service CONSUME eventos de order-service
+    consumer:
+      # Grupo de consumidores: agrupa múltiples instancias del mismo servicio
+      # Si tienes 2 instancias de notification-service, están en el mismo grupo
+      group-id: notification-service-group
+      # Auto desplazamiento: confirmar automáticamente el mensaje procesado
+      auto-offset-reset: earliest
+      # Deserializador para el valor del mensaje
+      # StringDeserializer: asume que el valor es JSON en formato String
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # Clase a la que deserializar los mensajes
+      properties:
+        spring.json.type.mapping: "orderCreatedEvent:com.microservices.notification.domain.event.OrderCreatedEvent"
+      # Permite tipos desconocidos (útil para versioning)
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    
+    # CONFIGURACIÓN DE PRODUCER (Productor)
+    # El notification-service PRODUCE eventos de notificación (si lo necesitara)
+    producer:
+      # Serializador para el valor
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # Nivel de garantía: "all" = máxima confiabilidad
+      acks: all
+      # Reintentos en caso de error
+      retries: 3
+    
+    # PROPIEDADES ADICIONALES
+    properties:
+      # Timeout para el socket
+      connections.max.idle.ms: 540000
+
+# ====== EUREKA CONFIGURATION ======
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    enabled: false  # Deshabilitado por ahora para pruebas locales
+  instance:
+    prefer-ip-address: true
+
+# ====== ACTUATOR ======
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# ====== LOGGING ======
+logging:
+  level:
+    root: INFO
+    com.microservices: DEBUG
+    org.springframework.kafka: DEBUG

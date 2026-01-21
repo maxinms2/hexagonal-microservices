@@ -8,16 +8,25 @@ Según tu necesidad:
 1. Leer: [README.md](./README.md) - Visión general
 2. Luego: [RESUMEN-FINAL.md](./RESUMEN-FINAL.md) - Estado actual
 3. Finalmente: [FLUJO-VISUAL.md](./FLUJO-VISUAL.md) - Ver ejemplos
+4. NUEVO: [RESUMEN-EVENT-DRIVEN.md](./RESUMEN-EVENT-DRIVEN.md) - 🆕 Lo último implementado
+
+### 👨‍💻 Quiero Usar Kafka (Event-Driven)
+1. Ir a: [QUICKSTART-KAFKA.md](./QUICKSTART-KAFKA.md) - 🆕 5 pasos exactos
+2. Leer: [docs/07-event-driven-kafka.md](./docs/07-event-driven-kafka.md) - Conceptos
+3. Ver: [docs/FLUJO-EVENT-DRIVEN.md](./docs/FLUJO-EVENT-DRIVEN.md) - Diagramas visuales
+4. Consultar: [notification-service/README.md](./notification-service/README.md) - Técnico
 
 ### 👨‍💻 Voy a Trabajar con el Código
 1. Ver: [PRUEBA-RAPIDA.md](./PRUEBA-RAPIDA.md) - Ejecutar localmente
 2. Leer: [order-service/README.md](./order-service/README.md) - Detalles técnicos
 3. Consultar: [docs/06-comunicacion-inter-microservicios.md](./docs/06-comunicacion-inter-microservicios.md) - HTTP Interfaces
+4. NUEVO: Ver estructura de [notification-service/](./notification-service/) - Patrón Event-Driven
 
 ### 🏛️ Quiero Entender la Arquitectura
 1. Leer: [docs/02-arquitectura-hexagonal.md](./docs/02-arquitectura-hexagonal.md) - Patrón base
 2. Luego: [docs/03-spring-boot-basics.md](./docs/03-spring-boot-basics.md) - Framework
-3. Consultar: [docs/06-comunicacion-inter-microservicios.md](./docs/06-comunicacion-inter-microservicios.md) - Comunicación
+3. Consultar: [docs/06-comunicacion-inter-microservicios.md](./docs/06-comunicacion-inter-microservicios.md) - Comunicación síncrona
+4. NUEVO: [docs/07-event-driven-kafka.md](./docs/07-event-driven-kafka.md) - Comunicación asíncrona con Kafka
 
 ### 🐛 Necesito Debuggear Algo
 1. Revisar: [ESTADO-MICROSERVICIOS.md](./ESTADO-MICROSERVICIOS.md) - Diagnóstico
@@ -32,10 +41,13 @@ Según tu necesidad:
 |---------|-----------|-----------|
 | [README.md](./README.md) | Descripción general del proyecto | Todos |
 | [RESUMEN-FINAL.md](./RESUMEN-FINAL.md) | ⭐ Estado completo y logros | Todos |
+| [RESUMEN-EVENT-DRIVEN.md](./RESUMEN-EVENT-DRIVEN.md) | 🆕 Resumen de lo implementado con Kafka | Todos |
 | [FLUJO-VISUAL.md](./FLUJO-VISUAL.md) | Diagramas, flujos y ejemplos | Visuales/Aprendices |
 | [ESTADO-MICROSERVICIOS.md](./ESTADO-MICROSERVICIOS.md) | Detalles técnicos profundos | Desarrolladores |
 | [PRUEBA-RAPIDA.md](./PRUEBA-RAPIDA.md) | Guía paso a paso (Copiar & Pegar) | Todos |
 | [GETTING_STARTED.md](./GETTING_STARTED.md) | Inicio rápido | Nuevos usuarios |
+| [QUICKSTART-KAFKA.md](./QUICKSTART-KAFKA.md) | 🆕 Guía rápida para Kafka y Event-Driven | Todos |
+| [IMPLEMENTACION-EVENT-DRIVEN.md](./IMPLEMENTACION-EVENT-DRIVEN.md) | 🆕 Documentación técnica completa de lo implementado | Desarrolladores |
 
 ---
 
@@ -48,6 +60,9 @@ Según tu necesidad:
 | [03-spring-boot-basics.md](./docs/03-spring-boot-basics.md) | Framework y ecosistema | Java básico |
 | [04-api-gateway.md](./docs/04-api-gateway.md) | Patrón API Gateway | Microservicios |
 | [05-service-discovery.md](./docs/05-service-discovery.md) | Eureka y service registry | Microservicios |
+| [06-comunicacion-inter-microservicios.md](./docs/06-comunicacion-inter-microservicios.md) | REST y HTTP Interfaces | Microservicios |
+| [07-event-driven-kafka.md](./docs/07-event-driven-kafka.md) | 🆕 Kafka y Event-Driven | Microservicios + Mensajería |
+| [FLUJO-EVENT-DRIVEN.md](./docs/FLUJO-EVENT-DRIVEN.md) | 🆕 Diagramas visuales de Event-Driven | Visuales/Aprendices |
 | [06-comunicacion-inter-microservicios.md](./docs/06-comunicacion-inter-microservicios.md) | ⭐ HTTP Interfaces (NUEVO) | Spring Boot 3.2+ |
 
 ---

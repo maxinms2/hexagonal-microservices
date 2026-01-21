@@ -1,0 +1,165 @@
+version: '3.8'
+
+services:
+  # ╔═══════════════════════════════════════════════════════════════════╗
+  # ║ ZOOKEEPER - Coordinador de Kafka                                 ║
+  # ╚═══════════════════════════════════════════════════════════════════╝
+  # Zookeeper es responsable de:
+  # - Coordinar el cluster de Kafka
+  # - Mantener la lista de brokers
+  # - Liderar elecciones
+  # - Guardar configuraciones del cluster
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: kafka-zookeeper
+    environment:
+      # Puerto en el que escucha Zookeeper
+      ZOOKEEPER_CLIENT_PORT: 2181
+      # Nombre del servidor Zookeeper
+      ZOOKEEPER_SERVER_ID: 1
+      # Datos de log
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      # Puerto interno: 2181 (para que otros servicios se conecten)
+      - "2181:2181"
+    networks:
+      - kafka-network
+    healthcheck:
+      test: [ "CMD", "echo", "ruok", "|", "nc", "127.0.0.1", "2181" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ╔═══════════════════════════════════════════════════════════════════╗
+  # ║ KAFKA - Broker de Eventos                                        ║
+  # ╚═══════════════════════════════════════════════════════════════════╝
+  # Kafka es nuestro event broker. Es donde:
+  # - order-service PRODUCE eventos (OrderCreatedEvent)
+  # - notification-service CONSUME eventos
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-broker
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+      # ID único del broker en el cluster
+      KAFKA_BROKER_ID: 1
+      
+      # Conexión a Zookeeper (para coordinación)
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      
+      # Puerto donde escucha Kafka desde clientes internos (en el contenedor)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      
+      # Mapeo de puertos para diferentes listeners
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      
+      # Listener por defecto para inter-broker communication
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      
+      # Replicación mínima (por defecto)
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      
+      # Retención de datos: 7 días
+      KAFKA_LOG_RETENTION_HOURS: 168
+      
+      # Tamaño máximo de mensaje: 1MB
+      KAFKA_MESSAGE_MAX_BYTES: 1048576
+      
+      # Auto creación de topics (útil para desarrollo)
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      
+      # Offset por defecto
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+    ports:
+      # Puerto externo (desde localhost/tu máquina)
+      - "29092:29092"
+      # Puerto interno (desde dentro del contenedor)
+      - "9092:9092"
+    networks:
+      - kafka-network
+    healthcheck:
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:9092" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # ╔═══════════════════════════════════════════════════════════════════╗
+  # ║ KAFDROP - UI para Visualizar Kafka (Opcional pero ÚTIL)          ║
+  # ╚═══════════════════════════════════════════════════════════════════╝
+  # Herramienta web para:
+  # - Ver topics
+  # - Ver mensajes
+  # - Ver consumer groups
+  # - Debuggear eventos
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      # Conexión a Kafka
+      KAFKA_BROKERCONNECT: kafka:9092
+      # Conexión a Zookeeper
+      ZK_HOSTS: zookeeper:2181
+      # Mostrar propiedades de topics
+      SCHEMAREGISTRY_ENABLED: "false"
+    ports:
+      # http://localhost:9000 para acceder a la UI
+      - "9000:9000"
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    driver: bridge
+
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                        INSTRUCCIONES DE USO                             ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+#
+# 1. INICIAR KAFKA:
+#    docker-compose up -d
+#
+# 2. VERIFICAR QUE TODO ESTÁ CORRIENDO:
+#    docker-compose ps
+#
+# 3. ACCEDER A KAFDROP (UI de Kafka):
+#    Abre en tu navegador: http://localhost:9000
+#
+# 4. CREAR UN TOPIC MANUALMENTE (si es necesario):
+#    docker exec kafka-broker kafka-topics --create \
+#      --topic order-events \
+#      --bootstrap-server localhost:9092 \
+#      --partitions 3 \
+#      --replication-factor 1
+#
+# 5. VER TOPICS:
+#    docker exec kafka-broker kafka-topics --list \
+#      --bootstrap-server localhost:9092
+#
+# 6. CONSUMIR MENSAJES DEL TOPIC:
+#    docker exec kafka-broker kafka-console-consumer \
+#      --topic order-events \
+#      --bootstrap-server localhost:9092 \
+#      --from-beginning
+#
+# 7. PRODUCIR MENSAJES DE TEST:
+#    docker exec -it kafka-broker kafka-console-producer \
+#      --topic order-events \
+#      --bootstrap-server localhost:9092
+#    (Luego escribe mensajes JSON)
+#
+# 8. DETENER KAFKA:
+#    docker-compose down
+#
+# 9. LIMPIAR TODO (volúmenes incluidos):
+#    docker-compose down -v
+#
+# VARIABLES DE ENTORNO DESDE JAVA:
+# - Para conectarse desde localhost: localhost:29092
+# - Para conectarse desde otro contenedor: kafka:9092

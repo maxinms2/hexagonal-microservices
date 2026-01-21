@@ -8,6 +8,16 @@ spring:
   profiles:
     active: dev
 
+  # ====== KAFKA CONFIGURATION ======
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    properties:
+      connections.max.idle.ms: 540000
+
 server:
   port: 8082
 
@@ -15,6 +25,7 @@ logging:
   level:
     root: INFO
     com.microservices: DEBUG
+    org.springframework.kafka: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
