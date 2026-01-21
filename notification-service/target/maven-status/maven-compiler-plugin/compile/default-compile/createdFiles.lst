@@ -1,0 +1,10 @@
+com\microservices\notification\infrastructure\adapter\in\kafka\KafkaConsumerAdapter.class
+com\microservices\notification\domain\model\Notification.class
+com\microservices\notification\application\port\in\ProcessOrderEventUseCase.class
+com\microservices\notification\infrastructure\config\KafkaConsumerConfig.class
+com\microservices\notification\domain\event\OrderCreatedEvent.class
+com\microservices\notification\domain\model\Notification$NotificationStatus.class
+com\microservices\notification\application\port\out\SendNotificationPort.class
+com\microservices\notification\application\service\NotificationService.class
+com\microservices\notification\NotificationServiceApplication.class
+com\microservices\notification\infrastructure\adapter\out\EmailAdapter.class

@@ -1,0 +1,9 @@
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\application\port\out\SendNotificationPort.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\infrastructure\adapter\in\kafka\KafkaConsumerAdapter.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\NotificationServiceApplication.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\infrastructure\adapter\out\EmailAdapter.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\application\service\NotificationService.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\application\port\in\ProcessOrderEventUseCase.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\domain\event\OrderCreatedEvent.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\domain\model\Notification.java
+C:\proyectos\hexagonal\notification-service\src\main\java\com\microservices\notification\infrastructure\config\KafkaConsumerConfig.java

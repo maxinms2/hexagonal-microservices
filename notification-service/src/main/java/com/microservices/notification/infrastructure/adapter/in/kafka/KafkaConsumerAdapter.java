@@ -54,7 +54,7 @@ public class KafkaConsumerAdapter {
     )
     public void consumeOrderCreatedEvent(
         OrderCreatedEvent event,
-        @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
         @Header(KafkaHeaders.OFFSET) long offset
     ) {
         log.info("🎧 Mensaje recibido de Kafka - Partición: {}, Offset: {}", partition, offset);

@@ -6,6 +6,7 @@ C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infra
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\dto\UpdateOrderStatusRequest.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\input\rest\GlobalExceptionHandler.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\exception\InvalidOrderStateException.java
+C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\config\KafkaProducerConfig.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\output\client\UserResponse.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\dto\OrderResponse.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\usecase\CreateOrderUseCase.java
@@ -18,9 +19,12 @@ C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\appli
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\model\Order.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\model\OrderStatus.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\usecase\DeleteOrderUseCase.java
+C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\port\output\PublishOrderEventPort.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\exception\UserNotFoundException.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\config\ApplicationServiceConfig.java
+C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\out\kafka\KafkaProducerAdapter.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\service\OrderService.java
+C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\event\OrderCreatedEvent.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\output\client\UserValidationAdapter.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\model\OrderId.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\domain\repository\OrderRepository.java

@@ -5,9 +5,6 @@ import com.microservices.order.domain.event.OrderCreatedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,19 +43,9 @@ public class KafkaProducerAdapter implements PublishOrderEventPort {
         try {
             log.info("📤 Publicando evento OrderCreated a Kafka - Orden: {}", event.getOrderId());
             
-            // Construir mensaje con headers
-            Message<OrderCreatedEvent> message = MessageBuilder
-                .withPayload(event)
-                // Usar el orderId como clave (para particionamiento)
-                .setHeader(KafkaHeaders.MESSAGE_KEY, event.getOrderId())
-                // Header personalizado con timestamp
-                .setHeader("timestamp", System.currentTimeMillis())
-                // Header con tipo de evento
-                .setHeader("eventType", "OrderCreated")
-                .build();
-            
-            // Enviar a Kafka
-            kafkaTemplate.send(TOPIC, message);
+            // Enviar a Kafka usando el orderId como clave (para particionamiento)
+            // KafkaTemplate maneja automáticamente la serialización JSON
+            kafkaTemplate.send(TOPIC, event.getOrderId(), event);
             
             log.info("✅ Evento publicado exitosamente - Orden: {}", event.getOrderId());
         } catch (Exception e) {
