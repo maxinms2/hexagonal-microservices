@@ -1,0 +1,14 @@
+com\microservices\user\application\service\UserServiceTest$CreateUserTests.class
+com\microservices\user\application\service\UserServiceTest$UpdateUserTests.class
+com\microservices\user\application\service\UserServiceTest$FindUserByIdTests.class
+com\microservices\user\domain\model\UserTest.class
+com\microservices\user\application\service\UserServiceTest$MockInteractionTests.class
+com\microservices\user\domain\model\UserTest$EdgeCasesTests.class
+com\microservices\user\application\service\UserServiceTest$FindAllUsersTests.class
+com\microservices\user\domain\model\UserTest$TimestampTests.class
+com\microservices\user\domain\model\UserTest$UserCreationTests.class
+com\microservices\user\application\service\UserServiceTest$BehaviorVerificationTests.class
+com\microservices\user\application\service\UserServiceTest.class
+com\microservices\user\domain\model\UserTest$UpdateNameTests.class
+com\microservices\user\domain\model\UserTest$UpdateEmailTests.class
+com\microservices\user\domain\model\UserTest$DeactivateActivateTests.class

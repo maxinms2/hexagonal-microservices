@@ -1,0 +1,8 @@
+com\microservices\order\application\service\OrderServiceTest.class
+com\microservices\order\application\service\OrderServiceTest$FindAllOrdersTests.class
+com\microservices\order\application\service\OrderServiceTest$DeleteOrderTests.class
+com\microservices\order\application\service\OrderServiceTest$UpdateOrderStatusTests.class
+com\microservices\order\application\service\OrderServiceTest$EdgeCasesTests.class
+com\microservices\order\application\service\OrderServiceTest$FindOrderTests.class
+com\microservices\order\application\service\OrderServiceTest$InterMicroservicesCommunicationTests.class
+com\microservices\order\application\service\OrderServiceTest$CreateOrderTests.class

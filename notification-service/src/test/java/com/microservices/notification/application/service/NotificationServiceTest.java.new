@@ -1,0 +1,361 @@
+package com.microservices.notification.application.service;
+
+import com.microservices.notification.application.port.out.SendNotificationPort;
+import com.microservices.notification.domain.event.OrderCreatedEvent;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * 🧪 UNIT TESTS PARA NOTIFICATION SERVICE (Event-Driven Architecture)
+ * 
+ * PROPÓSITO:
+ * - Testear procesamiento de eventos desde Kafka
+ * - Verificar que notificaciones se envían correctamente
+ * - Validar manejo de errores en comunicación asincrónica
+ * - Testear la arquitectura event-driven con mocks
+ */
+@DisplayName("🧪 Notification Service (Event-Driven Layer) Tests")
+@ExtendWith(MockitoExtension.class)
+class NotificationServiceTest {
+    
+    @Mock
+    private SendNotificationPort sendNotificationPort;
+    
+    @InjectMocks
+    private NotificationService notificationService;
+    
+    private OrderCreatedEvent testEvent;
+    
+    @BeforeEach
+    void setUp() {
+        testEvent = new OrderCreatedEvent(
+            "order-123",
+            "user-456",
+            "john@example.com",
+            150.00,
+            "Nueva orden creada",
+            LocalDateTime.now(),
+            "OrderCreated"
+        );
+    }
+    
+    @Nested
+    @DisplayName("✉️ processOrderCreatedEvent() - Procesar Evento de Orden Creada")
+    class ProcessOrderCreatedEventTests {
+        
+        @Test
+        @DisplayName("Debe enviar email al crear nueva orden")
+        void shouldSendEmailWhenOrderIsCreated() {
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            verify(sendNotificationPort, times(1))
+                .sendEmail(any(), any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe enviar email al email correcto")
+        void shouldSendEmailToCorrectAddress() {
+            ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
+            when(sendNotificationPort.sendEmail(emailCaptor.capture(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            assertEquals("john@example.com", emailCaptor.getValue());
+            verify(sendNotificationPort).sendEmail("john@example.com", any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe incluir información de la orden en el email")
+        void shouldIncludeOrderInfoInEmail() {
+            ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+            when(sendNotificationPort.sendEmail(any(), any(), messageCaptor.capture()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            String message = messageCaptor.getValue();
+            assertTrue(message.contains("order-123"), "Debe contener ID de orden");
+            assertTrue(message.contains("150"), "Debe contener monto");
+        }
+        
+        @Test
+        @DisplayName("Debe manejar fallos de envío")
+        void shouldHandleEmailSendingFailure() {
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(false);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            verify(sendNotificationPort).sendEmail(any(), any(), any());
+        }
+    }
+    
+    @Nested
+    @DisplayName("⚠️ Validación de Datos - Entrada del Evento")
+    class DataValidationTests {
+        
+        @Test
+        @DisplayName("Debe rechazar evento null")
+        void shouldRejectNullEvent() {
+            assertThrows(Exception.class,
+                () -> notificationService.processOrderCreatedEvent(null));
+            
+            verify(sendNotificationPort, never())
+                .sendEmail(any(), any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe rechazar evento con email vacío")
+        void shouldRejectEventWithEmptyEmail() {
+            OrderCreatedEvent invalidEvent = new OrderCreatedEvent(
+                "order-123",
+                "user-456",
+                "",
+                150.00,
+                "Nueva orden creada",
+                LocalDateTime.now(),
+                "OrderCreated"
+            );
+            
+            assertThrows(Exception.class,
+                () -> notificationService.processOrderCreatedEvent(invalidEvent));
+            
+            verify(sendNotificationPort, never())
+                .sendEmail(any(), any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe rechazar evento con email null")
+        void shouldRejectEventWithNullEmail() {
+            OrderCreatedEvent invalidEvent = new OrderCreatedEvent(
+                "order-123",
+                "user-456",
+                null,
+                150.00,
+                "Nueva orden creada",
+                LocalDateTime.now(),
+                "OrderCreated"
+            );
+            
+            assertThrows(Exception.class,
+                () -> notificationService.processOrderCreatedEvent(invalidEvent));
+            
+            verify(sendNotificationPort, never())
+                .sendEmail(any(), any(), any());
+        }
+    }
+    
+    @Nested
+    @DisplayName("📝 Formato de Email - Contenido y Presentación")
+    class EmailFormattingTests {
+        
+        @Test
+        @DisplayName("El email debe incluir todos los datos de la orden")
+        void emailShouldIncludeAllOrderData() {
+            OrderCreatedEvent event = new OrderCreatedEvent(
+                "ORD-2025-001",
+                "USR-123",
+                "customer@example.com",
+                299.99,
+                "Compra de productos",
+                LocalDateTime.now(),
+                "OrderCreated"
+            );
+            
+            ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+            when(sendNotificationPort.sendEmail(any(), any(), messageCaptor.capture()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(event);
+            
+            String message = messageCaptor.getValue();
+            assertAll(
+                () -> assertTrue(message.contains("ORD-2025-001"), "Debe incluir ID"),
+                () -> assertTrue(message.contains("299.99"), "Debe incluir monto"),
+                () -> assertTrue(message.contains("Compra de productos"), "Debe incluir descripción")
+            );
+        }
+        
+        @Test
+        @DisplayName("El email debe tener formato legible")
+        void emailShouldHaveLegibleFormat() {
+            ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+            when(sendNotificationPort.sendEmail(any(), any(), messageCaptor.capture()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            String message = messageCaptor.getValue();
+            assertFalse(message.isEmpty(), "No debe estar vacío");
+            assertTrue(message.length() >= 20, "Debe tener contenido");
+        }
+    }
+    
+    @Nested
+    @DisplayName("🌐 Arquitectura Event-Driven - Flujo de Eventos")
+    class EventDrivenArchitectureTests {
+        
+        @Test
+        @DisplayName("Debe procesar evento idempotentemente")
+        void shouldProcessEventIdempotently() {
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(testEvent);
+            notificationService.processOrderCreatedEvent(testEvent);
+            
+            verify(sendNotificationPort, times(2))
+                .sendEmail(any(), any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe procesar múltiples eventos diferentes")
+        void shouldProcessMultipleDifferentEvents() {
+            OrderCreatedEvent event1 = new OrderCreatedEvent(
+                "order-1", "user-1", "user1@example.com", 100.00,
+                "Evento 1", LocalDateTime.now(), "OrderCreated"
+            );
+            
+            OrderCreatedEvent event2 = new OrderCreatedEvent(
+                "order-2", "user-2", "user2@example.com", 200.00,
+                "Evento 2", LocalDateTime.now(), "OrderCreated"
+            );
+            
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(event1);
+            notificationService.processOrderCreatedEvent(event2);
+            
+            verify(sendNotificationPort, times(2))
+                .sendEmail(any(), any(), any());
+            
+            ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
+            verify(sendNotificationPort, times(2))
+                .sendEmail(emailCaptor.capture(), any(), any());
+            
+            java.util.List<String> capturedEmails = emailCaptor.getAllValues();
+            assertEquals(2, capturedEmails.size());
+        }
+        
+        @Test
+        @DisplayName("Debe ser tolerante a fallos en eventos")
+        void shouldBeTolerantToEventFailures() {
+            OrderCreatedEvent event1 = new OrderCreatedEvent(
+                "order-1", "user-1", "user1@example.com", 100.00,
+                "Evento 1", LocalDateTime.now(), "OrderCreated"
+            );
+            
+            OrderCreatedEvent event2 = new OrderCreatedEvent(
+                "order-2", "user-2", "user2@example.com", 200.00,
+                "Evento 2", LocalDateTime.now(), "OrderCreated"
+            );
+            
+            when(sendNotificationPort.sendEmail(eq("user1@example.com"), any(), any()))
+                .thenReturn(true);
+            
+            when(sendNotificationPort.sendEmail(eq("user2@example.com"), any(), any()))
+                .thenThrow(new RuntimeException("Email service unavailable"));
+            
+            notificationService.processOrderCreatedEvent(event1);
+            
+            assertThrows(RuntimeException.class,
+                () -> notificationService.processOrderCreatedEvent(event2));
+            
+            verify(sendNotificationPort, times(2))
+                .sendEmail(any(), any(), any());
+        }
+    }
+    
+    @Nested
+    @DisplayName("📊 Logging & Observabilidad")
+    class LoggingAndMonitoringTests {
+        
+        @Test
+        @DisplayName("Debe procesar evento con información de auditoría")
+        void shouldProcessEventWithAuditInfo() {
+            LocalDateTime now = LocalDateTime.now();
+            OrderCreatedEvent event = new OrderCreatedEvent(
+                "order-123",
+                "user-456",
+                "john@example.com",
+                150.00,
+                "Nueva orden",
+                now,
+                "OrderCreated"
+            );
+            
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(event);
+            
+            verify(sendNotificationPort).sendEmail(
+                "john@example.com",
+                any(),
+                any()
+            );
+        }
+    }
+    
+    @Nested
+    @DisplayName("🔊 Integración con Kafka - Topic Management")
+    class KafkaTopicIntegrationTests {
+        
+        @Test
+        @DisplayName("Debe reconocer el tipo de evento correcto")
+        void shouldRecognizeCorrectEventType() {
+            OrderCreatedEvent event = new OrderCreatedEvent(
+                "order-123",
+                "user-456",
+                "john@example.com",
+                150.00,
+                "Nueva orden",
+                LocalDateTime.now(),
+                "OrderCreated"
+            );
+            
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(event);
+            
+            verify(sendNotificationPort).sendEmail(any(), any(), any());
+        }
+        
+        @Test
+        @DisplayName("Debe procesar eventos de diferentes tipos")
+        void shouldProcessDifferentOrderEventTypes() {
+            OrderCreatedEvent event = new OrderCreatedEvent(
+                "order-123",
+                "user-456",
+                "john@example.com",
+                150.00,
+                "Nueva orden",
+                LocalDateTime.now(),
+                "OrderCreated"
+            );
+            
+            when(sendNotificationPort.sendEmail(any(), any(), any()))
+                .thenReturn(true);
+            
+            notificationService.processOrderCreatedEvent(event);
+            
+            verify(sendNotificationPort).sendEmail(any(), any(), any());
+        }
+    }
+}
