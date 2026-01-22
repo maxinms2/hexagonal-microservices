@@ -1,5 +1,4 @@
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\application\port\output\UserValidationPort.java
-C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\application\DeleteOrderUseCaseAdapter.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\input\rest\OrderController.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\config\HttpClientConfig.java
 C:\proyectos\hexagonal\order-service\src\main\java\com\microservices\order\infrastructure\adapter\output\persistence\inmemory\InMemoryOrderRepository.java

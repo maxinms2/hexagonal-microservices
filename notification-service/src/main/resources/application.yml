@@ -1,19 +1,24 @@
 server:
-  port: 8085
+  port: ${SERVER_PORT:8085}
   servlet:
-    context-path: /api
+    context-path: ${SERVER_CONTEXT_PATH:/api}
 
 spring:
   application:
     name: notification-service
+  
+  # ====== SPRING CLOUD CONFIG ======
+  cloud:
+    config:
+      enabled: false
   
   # ====== KAFKA CONFIGURATION ======
   # Configuración de Kafka para conectarse al broker
   kafka:
     # Dirección del broker de Kafka
     # En Docker, usaremos: kafka:9092
-    # En local: localhost:9092
-    bootstrap-servers: localhost:9092
+    # En local: localhost:29092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
     
     # CONFIGURACIÓN DE CONSUMER (Consumidor)
     # El notification-service CONSUME eventos de order-service
@@ -51,8 +56,8 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-    enabled: false  # Deshabilitado por ahora para pruebas locales
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    enabled: ${EUREKA_ENABLED:false}  # Deshabilitado por ahora para pruebas locales
   instance:
     prefer-ip-address: true
 

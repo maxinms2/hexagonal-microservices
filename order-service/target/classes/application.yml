@@ -10,7 +10,7 @@ spring:
 
   # ====== KAFKA CONFIGURATION ======
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       acks: all
@@ -19,7 +19,7 @@ spring:
       connections.max.idle.ms: 540000
 
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
 
 logging:
   level:
@@ -34,7 +34,7 @@ logging:
 # ============================================
 # URL base del user-service (se configura por perfil)
 user-service:
-  url: http://localhost:8081
+  url: ${USER_SERVICE_URL:http://localhost:8081}
 
 ---
 # ============================================
@@ -80,7 +80,7 @@ eureka:
 # CLIENTE HTTP: USER SERVICE
 # ============================================
 user-service:
-  url: http://localhost:8081
+  url: ${USER_SERVICE_URL:http://localhost:8081}
 
 management:
   endpoints:

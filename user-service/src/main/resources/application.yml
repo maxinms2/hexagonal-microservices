@@ -13,7 +13,7 @@ spring:
 
 # Puerto del servidor
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
   
 # Configuración de logging
 logging:
